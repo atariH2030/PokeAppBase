@@ -16,7 +16,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PokemonScreen(
     // O Koin cria e entrega a ViewModel pronta aqui!
-    viewModel: PokemonViewModel = koinViewModel()
+    viewModel: PokemonViewModel = koinViewModel(),
+            onNavigateToDetail: (Int) -> Unit
 ) {
     // Fica escutando as mudanças de estado da ViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,7 +65,6 @@ fun PokemonScreen(
                 CircularProgressIndicator() // Bolinha de carregamento
             }
             is UiState.Success -> {
-                // Desenha o Pokémon!
                 Text(
                     text = state.data.name,
                     style = MaterialTheme.typography.headlineLarge
@@ -74,6 +74,12 @@ fun PokemonScreen(
                     contentDescription = "Imagem do ${state.data.name}",
                     modifier = Modifier.size(250.dp)
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // O BOTÃO QUE ACIONA A NAVEGAÇÃO
+                Button(onClick = { onNavigateToDetail(state.data.id) }) {
+                    Text("Ver Detalhes do ${state.data.name}")
+                }
             }
             is UiState.Error -> {
                 Text(

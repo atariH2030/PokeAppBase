@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.com.rickson.pokeappbase.presentation.pokemon.PokemonScreen
+import br.com.rickson.pokeappbase.presentation.pokemon.detail.PokemonDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -18,18 +19,29 @@ fun AppNavigation() {
     ) {
         // TELA 1: BUSCA
         composable(AppRoutes.PokemonSearch.route) {
-            PokemonScreen()
-            // Dica: Futuramente você passará o navController aqui para
-            // navegar quando clicar em 'Buscar'.
+            PokemonScreen(
+                onNavigateToDetail = { pokemonId ->
+                    // Chama a rota dinâmica, injetando o número do Pokémon
+                    navController.navigate(AppRoutes.PokemonDetail.createRoute(pokemonId))
+                }
+            )
         }
 
-        // TELA 2: DETALHE (Exemplo de como seria)
+        // TELA 2: DETALHE
         composable(
             route = AppRoutes.PokemonDetail.route,
             arguments = listOf(navArgument("pokemonId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("pokemonId")
-            // Aqui você chamaria a PokemonDetailScreen(id)
+            // Extrai o ID da rota
+            val id = backStackEntry.arguments?.getInt("pokemonId") ?: 0
+
+            PokemonDetailScreen(
+                pokemonId = id,
+                onBackClick = {
+                    // Volta para a tela anterior
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
